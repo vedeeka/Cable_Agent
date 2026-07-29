@@ -1,0 +1,10 @@
+from dhanhq import dhanhq
+
+CLIENT_ID = "ebab8b03"
+ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzg1MzQxNjg5LCJpYXQiOjE3ODUyNTUyODksInRva2VuQ29uc3VtZXJUeXBlIjoiU0VMRiIsIndlYmhvb2tVcmwiOiIiLCJkaGFuQ2xpZW50SWQiOiIxMTExNDE2MTYzIn0.qw_Q6rggiAkfXTbxrmhe32UAon2NPu0zxWrv0r6BJvMyCeQpXrXW50t7K1U3G9LdmJuFALSPy0y7uFoT-vyHIw"
+
+dhan = dhanhq(CLIENT_ID)
+
+profile = dhan.get_user_profile()
+
+print(profile)

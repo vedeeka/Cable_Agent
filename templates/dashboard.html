@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise AI OS - Dashboard</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <div class="p-2 bg-indigo-600 rounded-lg">
+                <i class="fa-solid fa-brain text-white text-xl"></i>
+            </div>
+            <h1 class="text-xl font-bold tracking-wide">Enterprise AI OS</h1>
+        </div>
+
+        <!-- Dynamic User Profile Header -->
+        <div class="flex items-center space-x-4">
+            <div class="text-right">
+                <p id="user-name" class="font-semibold text-sm">Loading...</p>
+                <p id="user-email" class="text-xs text-gray-400">Loading...</p>
+            </div>
+            <div id="user-avatar-container">
+                <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-lg animate-pulse">
+                    ?
+                </div>
+            </div>
+            <button id="logout-btn" class="text-gray-400 hover:text-red-400 transition p-2" title="Logout">
+                <i class="fa-solid fa-right-from-bracket text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 p-6 max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Left 2 Columns: Knowledge Sync Stats & Recent Synced Data -->
+        <div class="lg:col-span-2 space-y-6">
+
+            <!-- System Status Banner -->
+            <div class="bg-indigo-950/50 border border-indigo-500/30 rounded-xl p-4 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div id="status-ping" class="w-3 h-3 bg-amber-400 rounded-full animate-ping"></div>
+                    <p class="text-sm text-indigo-200">
+                        <span class="font-semibold">Sync Status:</span> <span id="sync-status">Connecting to workspace API...</span>
+                    </p>
+                </div>
+                <button id="resync-btn" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-md transition flex items-center space-x-1 cursor-pointer">
+                    <i class="fa-solid fa-rotate-right" id="resync-icon"></i>
+                    <span>Re-sync</span>
+                </button>
+            </div>
+
+            <!-- Sync Summary Cards -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 flex items-center space-x-4">
+                    <div class="p-3 bg-blue-500/10 text-blue-400 rounded-lg text-2xl">
+                        <i class="fa-solid fa-file-invoice"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-sm">Documents Synced</p>
+                        <p id="docs-synced-count" class="text-2xl font-bold">0</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-5 flex items-center space-x-4">
+                    <div class="p-3 bg-purple-500/10 text-purple-400 rounded-lg text-2xl">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-sm">Vector Chunks</p>
+                        <p id="chunks-created-count" class="text-2xl font-bold">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Previews Section -->
+            <div class="space-y-4">
+                <h2 class="text-lg font-semibold text-gray-200 flex items-center space-x-2">
+                    <i class="fa-solid fa-database text-indigo-400"></i>
+                    <span>Knowledge Base Previews</span>
+                </h2>
+
+                <!-- Gmail Preview -->
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-4">
+                    <div class="flex items-center space-x-2 text-red-400 mb-2">
+                        <i class="fa-solid fa-envelope"></i>
+                        <h3 class="font-semibold text-sm">Latest Email</h3>
+                    </div>
+                    <div id="latest-email-box" class="bg-gray-900/70 p-3 rounded-lg text-xs font-mono text-gray-300 break-words max-h-24 overflow-y-auto">
+                        Synchronizing email records...
+                    </div>
+                </div>
+
+                <!-- Calendar Preview -->
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-4">
+                    <div class="flex items-center space-x-2 text-blue-400 mb-2">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <h3 class="font-semibold text-sm">Latest Calendar Event</h3>
+                    </div>
+                    <div id="latest-calendar-box" class="bg-gray-900/70 p-3 rounded-lg text-xs font-mono text-gray-300 break-words max-h-24 overflow-y-auto">
+                        Synchronizing calendar events...
+                    </div>
+                </div>
+
+                <!-- Drive Preview -->
+                <div class="bg-gray-800 border border-gray-700 rounded-xl p-4">
+                    <div class="flex items-center space-x-2 text-amber-400 mb-2">
+                        <i class="fa-solid fa-folder-open"></i>
+                        <h3 class="font-semibold text-sm">Latest Drive File</h3>
+                    </div>
+                    <div id="latest-drive-box" class="bg-gray-900/70 p-3 rounded-lg text-xs font-mono text-gray-300 break-words max-h-24 overflow-y-auto">
+                        Synchronizing drive files...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right 1 Column: Interactive AI Assistant Chat Widget -->
+        <div class="bg-gray-800 border border-gray-700 rounded-xl flex flex-col h-[650px] lg:h-auto">
+            
+            <!-- Chat Header -->
+            <div class="p-4 border-b border-gray-700 flex items-center justify-between bg-gray-800/80 rounded-t-xl">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-robot text-indigo-400 text-lg"></i>
+                    <h3 class="font-semibold text-gray-100">AI Assistant</h3>
+                </div>
+                <span id="ai-status" class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-medium">Ready</span>
+            </div>
+
+            <!-- Chat Messages Area -->
+            <div id="chat-messages" class="flex-1 p-4 space-y-4 overflow-y-auto">
+                <div class="flex items-start space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold shrink-0">AI</div>
+                    <div id="welcome-msg" class="bg-gray-700/80 rounded-lg p-3 text-sm text-gray-200 max-w-[85%]">
+                        Hello! Initializing workspace context...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input Form -->
+            <form id="chat-form" class="p-3 border-t border-gray-700 flex space-x-2 bg-gray-800/80 rounded-b-xl">
+                <input 
+                    type="text" 
+                    id="chat-input" 
+                    placeholder="Ask about your emails, schedule, or files..." 
+                    class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 text-gray-100"
+                    required
+                >
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm transition font-medium flex items-center space-x-1">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- Client-Side JavaScript for Consuming REST APIs -->
+    <script>
+        // API Base URL - Change this if running frontend on a separate port or domain
+        const API_BASE = 'http://127.0.0.1:5000';
+
+        const userName = document.getElementById('user-name');
+        const userEmail = document.getElementById('user-email');
+        const userAvatarContainer = document.getElementById('user-avatar-container');
+        const syncStatus = document.getElementById('sync-status');
+        const statusPing = document.getElementById('status-ping');
+        const resyncBtn = document.getElementById('resync-btn');
+        const resyncIcon = document.getElementById('resync-icon');
+
+        const docsSyncedCount = document.getElementById('docs-synced-count');
+        const chunksCreatedCount = document.getElementById('chunks-created-count');
+        const latestEmailBox = document.getElementById('latest-email-box');
+        const latestCalendarBox = document.getElementById('latest-calendar-box');
+        const latestDriveBox = document.getElementById('latest-drive-box');
+        const welcomeMsg = document.getElementById('welcome-msg');
+
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Helper: Convert object/JSON to readable text
+        function formatPreview(data) {
+            if (!data) return 'No records synchronized.';
+            if (typeof data === 'object') return JSON.stringify(data, null, 2);
+            return data;
+        }
+
+        // 1. Fetch Logged In User Profile
+        async function fetchUserProfile() {
+            try {
+                const res = await fetch(`${API_BASE}/api/me`, { credentials: 'include' });
+                if (!res.ok) {
+                    window.location.href = `${API_BASE}/login`;
+                    return null;
+                }
+                const data = await res.json();
+                const user = data.user;
+
+                userName.textContent = user.name || 'User';
+                userEmail.textContent = user.email || '';
+                
+                if (user.picture) {
+                    userAvatarContainer.innerHTML = `<img src="${user.picture}" alt="Profile" class="w-10 h-10 rounded-full border border-gray-600">`;
+                } else {
+                    userAvatarContainer.innerHTML = `<div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-lg">${(user.name || 'U')[0]}</div>`;
+                }
+
+                welcomeMsg.textContent = `Hello ${user.name || 'User'}! Your Google Workspace context is loaded into memory. How can I help you today?`;
+                return user;
+            } catch (err) {
+                console.error('Failed to load user profile:', err);
+                syncStatus.textContent = "Error authenticating user.";
+            }
+        }
+
+        // 2. Fetch Dashboard Sync Data
+        async function loadDashboardData() {
+            resyncIcon.classList.add('fa-spin');
+            syncStatus.textContent = "Synchronizing workspace context...";
+            statusPing.className = "w-3 h-3 bg-amber-400 rounded-full animate-ping";
+
+            try {
+                const res = await fetch(`${API_BASE}/api/dashboard`, { credentials: 'include' });
+                if (!res.ok) throw new Error('API Sync Failed');
+
+                const data = await res.json();
+
+                // Update UI Elements
+                docsSyncedCount.textContent = data.documents_synced ?? 0;
+                chunksCreatedCount.textContent = data.chunks_created ?? 0;
+                
+                latestEmailBox.textContent = formatPreview(data.latest_email);
+                latestCalendarBox.textContent = formatPreview(data.latest_calendar);
+                latestDriveBox.textContent = formatPreview(data.latest_drive);
+
+                syncStatus.textContent = data.response_msg || "Workspace loaded.";
+                statusPing.className = "w-3 h-3 bg-emerald-400 rounded-full animate-ping";
+            } catch (err) {
+                console.error('Sync Error:', err);
+                syncStatus.textContent = "Synchronization failed. Please try again.";
+                statusPing.className = "w-3 h-3 bg-red-500 rounded-full";
+            } finally {
+                resyncIcon.classList.remove('fa-spin');
+            }
+        }
+
+        // 3. Append Message to Chat UI
+        function appendMessage(sender, text, isAi = false) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = isAi ? 'flex items-start space-x-2' : 'flex items-start justify-end space-x-2';
+
+            const avatar = isAi 
+                ? '<div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold shrink-0">AI</div>'
+                : '';
+
+            const bubbleClass = isAi 
+                ? 'bg-gray-700/80 text-gray-200' 
+                : 'bg-indigo-600 text-white';
+
+            msgDiv.innerHTML = `
+                ${avatar}
+                <div class="${bubbleClass} rounded-lg p-3 text-sm max-w-[85%] break-words">
+                    ${text}
+                </div>
+            `;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // 4. Handle Chat Form Submission
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            appendMessage('You', message, false);
+            chatInput.value = '';
+
+            // Loading state
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'flex items-start space-x-2';
+            loadingDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold shrink-0">AI</div>
+                <div class="bg-gray-700/80 text-gray-400 italic rounded-lg p-3 text-sm">
+                    Searching knowledge base...
+                </div>
+            `;
+            chatMessages.appendChild(loadingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await res.json();
+                chatMessages.removeChild(loadingDiv);
+
+                const aiResponse = data.response || data.context || "Processed query successfully.";
+                appendMessage('AI', aiResponse, true);
+
+            } catch (err) {
+                if (chatMessages.contains(loadingDiv)) {
+                    chatMessages.removeChild(loadingDiv);
+                }
+                appendMessage('AI', 'Error processing your request. Please try again.', true);
+            }
+        });
+
+        // 5. Handle Logout
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await fetch(`${API_BASE}/api/logout`, { method: 'POST', credentials: 'include' });
+                window.location.href = `${API_BASE}/login`;
+            } catch (err) {
+                window.location.href = `${API_BASE}/logout`;
+            }
+        });
+
+        // Re-sync Button Listener
+        resyncBtn.addEventListener('click', loadDashboardData);
+
+        // Initial Load Sequence
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await fetchUserProfile();
+            if (user) {
+                await loadDashboardData();
+            }
+        });
+    </script>
+</body>
+</html>
