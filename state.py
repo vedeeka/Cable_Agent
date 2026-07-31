@@ -1,26 +1,26 @@
-from typing import TypedDict, Annotated
-from langgraph.graph.message import add_messages
-
+from typing import TypedDict, Optional, List, Dict, Any
 
 class AgentState(TypedDict):
-
-    messages: Annotated[list, add_messages]
-
+    # Keep your existing state keys ...
+    messages: List[Any]
+    user_id: str
     name: str
     email: str
-
     access_token: str
-    refresh_token: str | None
-
+    refresh_token: Optional[str]
+    integrations: Dict[str, bool]
+    query: str
+    intent: str
+    plan: List[Any]
+    next_step: int
     context: str
-
+    tool_results: Dict[str, Any]
     response: str
-    latest_email: str
-
-    latest_calendar: str
-
-    latest_drive: str
-
-    documents_synced: int
-
-    chunks_created: int
+    
+    # Add these keys to prevent LangGraph from stripping them:
+    latest_email: Optional[str]
+    latest_calendar: Optional[str]
+    latest_drive: Optional[str]
+    latest_sheets: Optional[str]
+    documents_synced: Optional[int]
+    chunks_created: Optional[int]

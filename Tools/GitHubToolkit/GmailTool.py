@@ -3,7 +3,7 @@ import requests
 
 @tool
 def get_emails(access_token: str):
-    """Get latest Gmail messages."""
+    """Get top latest recent full Gmail messages."""
 
     headers = {
         "Authorization": f"Bearer {access_token}"
