@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+from langchain_core.runnables import RunnableConfig
 
 from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import RedirectResponse
@@ -25,9 +26,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# ---------------------------------------------------------------------------
-# 1. CORS Configuration (Must allow credentials and match FRONTEND_URL exactly)
-# ---------------------------------------------------------------------------
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[FRONTEND_URL],
@@ -36,11 +35,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ---------------------------------------------------------------------------
-# 2. Session Middleware Configuration
-# ---------------------------------------------------------------------------
-# Fallback to a stable local key if SECRET_KEY environment variable is missing.
-# If SECRET_KEY is None, SessionMiddleware raises an AssertionError.
+
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 app.add_middleware(
@@ -73,9 +68,7 @@ google = oauth.register(
     },
 )
 
-# ---------------------------------------------------------------------------
-# Models & Routes
-# ---------------------------------------------------------------------------
+
 class ChatRequest(BaseModel):
     message: str
 
@@ -182,7 +175,14 @@ async def dashboard_api(request: Request):
     }
 
     try:
-        raw_result = graph.invoke(initial_state)
+        config = RunnableConfig(
+                configurable={
+                    "thread_id":user.get("sub", user.get("email"))
+                }
+        )
+
+        raw_result = graph.invoke(initial_state, config=config)
+
         result = raw_result if isinstance(raw_result, dict) else {}
     except Exception as e:
         print("Graph invocation failed:", e)
@@ -231,7 +231,14 @@ async def manual_sync_api(payload: ManualSyncRequest):
     }
 
     try:
-        raw_result = graph.invoke(initial_state)
+        
+        config = RunnableConfig(
+                configurable={
+                    "thread_id":payload.email
+                }
+        )
+
+        raw_result = graph.invoke(initial_state, config=config)
         result = raw_result if isinstance(raw_result, dict) else {}
     except Exception as e:
         print("Sync error:", e)
@@ -281,11 +288,19 @@ async def chat_api(payload: ChatRequest, request: Request):
     }
 
     try:
+        config = RunnableConfig(
+                configurable={
+                    "thread_id":user.get("email"),
+                }
+        )
+
+        result = graph.invoke(state, config=config)
         result = graph.invoke(state)
         return result if isinstance(result, dict) else {"response": "Error processing query."}
     except Exception as e:
         print("Chat processing error:", e)
         raise HTTPException(status_code=500, detail="Internal processing error.")
+
 
 
 @app.get("/logout")
@@ -297,5 +312,5 @@ async def logout(request: Request):
 
 if __name__ == "__main__":
     import uvicorn
-    # Keep host aligned strictly to "localhost" to match FRONTEND_URL same-site context
+
     uvicorn.run("app:app", host="localhost", port=8000, reload=True)

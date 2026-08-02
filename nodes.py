@@ -82,6 +82,7 @@ def welcome_node(state: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def sync_everything_node(state: Dict[str, Any]) -> Dict[str, Any]:
+    
     token = state["access_token"]
     user_email = state["email"]
     docs: List[Dict[str, Any]] = []
@@ -263,13 +264,18 @@ def sync_everything_node(state: Dict[str, Any]) -> Dict[str, Any]:
                 }
             )
 
-    # ---------------------------------------------------------------------------
-    # 5. Embed & Store in ChromaDB
-    # ---------------------------------------------------------------------------
+    latest_email = next((d["text"][:500] for d in docs if d["source"] == "gmail"), None)
+    latest_calendar = next((d["text"][:500] for d in docs if d["source"] == "calendar"), None)
+    latest_drive = next((d["text"][:500] for d in docs if d["source"] == "drive"), None)
+    latest_sheets = next((d["text"][:500] for d in docs if d["source"] == "sheets"), None)
+
     if chunks:
         texts_to_embed = [c["text"] for c in chunks]
         embeddings = embedding_model.encode(texts_to_embed).tolist()
-        unique_ids = [f"{c['source']}_{c['id']}_{uuid.uuid4().hex[:8]}" for c in chunks]
+        unique_ids = [
+            f"{c['source']}_{c['id']}_{uuid.uuid4().hex[:8]}"
+            for c in chunks
+        ]
 
         collection.add(
             ids=unique_ids,
@@ -277,19 +283,20 @@ def sync_everything_node(state: Dict[str, Any]) -> Dict[str, Any]:
             embeddings=embeddings,
             metadatas=[
                 {
+                    "email": user_email,
                     "source": c["source"],
                     "doc_id": c["id"],
-                    "user": user_email,
+                    "latest_email": latest_email or "",
+                    "latest_calendar": latest_calendar or "",
+                    "latest_drive": latest_drive or "",
+                    "latest_sheets": latest_sheets or "",
+                    "documents_synced": len(docs),
+                    "chunks_created": len(chunks),
+                    "timestamp": int(time.time()),
                 }
                 for c in chunks
             ],
         )
-
-    # Extract Latest Previews Safely
-    latest_email = next((d["text"][:500] for d in docs if d["source"] == "gmail"), None)
-    latest_calendar = next((d["text"][:500] for d in docs if d["source"] == "calendar"), None)
-    latest_drive = next((d["text"][:500] for d in docs if d["source"] == "drive"), None)
-    latest_sheets = next((d["text"][:500] for d in docs if d["source"] == "sheets"), None)
 
     return {
         "response": "Knowledge base synchronized successfully.",
