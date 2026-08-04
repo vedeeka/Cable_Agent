@@ -276,7 +276,21 @@ def sync_everything_node(state: Dict[str, Any]) -> Dict[str, Any]:
             f"{c['source']}_{c['id']}_{uuid.uuid4().hex[:8]}"
             for c in chunks
         ]
-
+        collection.add(
+            ids=unique_ids,
+            documents=texts_to_embed,
+            embeddings=embeddings,
+            metadatas=[
+                {
+                    "user_id": user_email,
+                    "source": c["source"],
+                    "doc_id": c["id"],
+                    "chunk_id": i,
+                    "timestamp": int(time.time())
+                }
+                for i, c in enumerate(chunks)
+            ]
+        )
         collection.add(
             ids=unique_ids,
             documents=texts_to_embed,
