@@ -10,10 +10,12 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from sentence_transformers import SentenceTransformer
+from Tools.summarization.summarizer import summarizer
 
-# ---------------------------------------------------------------------------
-# Initializations
-# ---------------------------------------------------------------------------
+
+
+
+
 embedding_model = SentenceTransformer("BAAI/bge-small-en-v1.5")
 
 client = chromadb.PersistentClient(path="./vectordb")
@@ -321,3 +323,5 @@ def sync_everything_node(state: Dict[str, Any]) -> Dict[str, Any]:
         "documents_synced": len(docs),
         "chunks_created": len(chunks),
     }
+
+

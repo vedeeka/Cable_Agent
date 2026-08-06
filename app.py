@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 from langchain_core.runnables import RunnableConfig
-
+from Tools.summarization.summarizer import summarizer
 from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -310,6 +310,79 @@ async def logout(request: Request):
     return {"status": "success", "message": "Successfully logged out."}
 
 
+from fastapi import FastAPI, Request, HTTPException
+from Tools.summarization.summarizer import summarizer
+from state import AgentState
+
+
+
+
+
+
+@app.get("/api/summary")
+async def get_summary(request: Request):
+
+    user = request.session.get("user")
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+
+
+    state: AgentState = {
+        "messages": [],
+        "user_id": user.get("sub", user.get("email")),
+        "name": user.get("name", "User"),
+        "email": user.get("email"),
+
+        "access_token": user.get("access_token"),
+        "refresh_token": user.get("refresh_token"),
+
+        "integrations": {
+            "gmail": True,
+            "calendar": True,
+            "drive": True,
+            "docs": True,
+            "sheets": True,
+        },
+
+        "query": "Generate enterprise summary",
+        "intent": "summary",
+
+        "plan": [],
+        "next_step": 0,
+
+        "context": "",
+        "tool_results": {},
+        "response": "",
+
+        "latest_email": "",
+        "latest_calendar": "",
+        "latest_drive": "",
+        "latest_sheets": "",
+
+        "documents_synced": 0,
+        "chunks_created": 0,
+    }
+
+
+    try:
+        result = summarizer(state)
+
+        return {
+            "status": "success",
+            "summary": result.get("response", "")
+        }
+
+    except Exception as e:
+        print("Summary generation failed:", e)
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed generating summary"
+        )
 if __name__ == "__main__":
     import uvicorn
 
