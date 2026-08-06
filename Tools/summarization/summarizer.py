@@ -63,13 +63,25 @@ Generate a concise enterprise summary including:
 
 Return only the summary.
 Keep it under 250 words.
-"""
 
+and give in the format strickly as below:
+Summary:
+- Latest Email Activity: <summary of latest email>
+- Upcoming/Latest Calendar Event: <summary of latest calendar event>
+- Recently Indexed Drive File: <summary of recently indexed drive file>
+- Latest Google Sheets Information: <summary of latest google sheets information>
+- Overall Indexing Statistics: <summary of overall indexing statistics>
+- Important Insights: <summary of important insights discovered from the indexed documents>
+"""
     response = initialise_llm(prompt)
 
-    print("========== LLM RESPONSE ==========")
-    print(response.content)
+    summary = ""
+
+    for part in response.content:
+        if part.get("type") == "text":
+            summary += part.get("text", "")
+
     return {
-    "response": response.content
+        "response": summary
     }
 
