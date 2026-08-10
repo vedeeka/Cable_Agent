@@ -12,7 +12,7 @@ oauth.register(
     client_secret=settings.GOOGLE_CLIENT_SECRET,
     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
     client_kwargs={
-        'scope': 'openid email profile'
+        'scope': 'openid email profile https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets'
     }
 )
 
@@ -20,7 +20,7 @@ oauth.register(
 async def login(request: Request):
     # Redirect to Google's consent screen
     redirect_uri = request.url_for('auth_callback')
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+    return await oauth.google.authorize_redirect(request, redirect_uri, prompt="select_account")
 
 @router.get("/callback", name="auth_callback")
 async def auth_callback(request: Request):
@@ -29,6 +29,7 @@ async def auth_callback(request: Request):
         user = token.get('userinfo')
         if user:
             request.session['user'] = user
+            request.session['access_token'] = token.get('access_token')
     except Exception as e:
         print(f"Auth error: {e}")
     # Redirect to frontend dashboard
@@ -52,5 +53,5 @@ async def get_current_user(request: Request):
 
 @router.get("/logout")
 async def logout(request: Request):
-    request.session.pop('user', None)
+    request.session.clear()
     return RedirectResponse(url="http://localhost:3000/")

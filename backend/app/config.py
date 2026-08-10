@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "a_very_secret_key"
     GOOGLE_CLIENT_ID: str = "862296237561-fhjgg5lt0ag94ki9u9b2qu3cjqr5m1qi.apps.googleusercontent.com"
     GOOGLE_CLIENT_SECRET: str = "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"
+    GEMINI_API_KEY: str | None = None
 
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
