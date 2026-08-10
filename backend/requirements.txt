@@ -1,0 +1,19 @@
+# FastAPI Framework
+fastapi
+uvicorn[standard]
+
+# Database & ORM
+SQLAlchemy
+alembic
+psycopg2-binary
+
+# Configuration
+pydantic
+pydantic-settings
+python-dotenv
+
+# Authentication
+authlib
+httpx
+itsdangerous
+python-jose[cryptography]
